@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "ceneopinion"
+version = "0.1.0"
+description = ""
+authors = ["Jakub Wilk <wilkjakub64@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+flask = "^2.2.3"
+montydb = "^2.5.0"
+python-dotenv = "^1.0.0"
+pandas = "^1.5.3"
+plotly = "^5.13.1"
+beautifulsoup4 = "^4.11.2"
+
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.0.0"
+autopep8 = "^2.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
