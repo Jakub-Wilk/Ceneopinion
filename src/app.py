@@ -32,12 +32,19 @@ def extract():
 
 @app.get("/product/<int:product_id>")
 def details_get(product_id: int):
-    review_count = get_review_count_for_product(product_id)
-    delay = review_count // 10 + 1
+    product_data = db.products.find_one({"product_id": product_id})
+    if not product_data:
+        review_data = {}
+        review_count = get_review_count_for_product(product_id)
+        delay = review_count // 10 + 1
+    else:
+        review_data = product_data["review_data"]
+        delay = None
     return render_template("index.html", endpoint="product_details", data={
         "product_id": product_id,
         "cooldown": app.config["REQUEST_COOLDOWN"],
-        "delay": delay
+        "delay": delay,
+        "review_data": review_data
     })
 
 
