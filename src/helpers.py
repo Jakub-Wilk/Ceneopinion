@@ -107,8 +107,8 @@ def extract_product_info(id: int) -> pd.DataFrame:
     votes_yes = reviews.query(class_="vote-yes").extract(lambda x: x["data-total-vote"])
     votes_no = reviews.query(class_="vote-no").extract(lambda x: x["data-total-vote"])
     content = reviews.query(class_="user-post__text").extract(lambda x: x.string)
-    positives = reviews.query(class_="review-feature__title--positives").extract(lambda x: x.find_next_siblings())
-    negatives = reviews.query(class_="review-feature__title--negatives").extract(lambda x: x.find_next_siblings())
+    positives = reviews.query(class_="review-feature__title--positives").extract(lambda x: [x.string for x in x.find_next_siblings()])
+    negatives = reviews.query(class_="review-feature__title--negatives").extract(lambda x: [x.string for x in x.find_next_siblings()])
 
     df = pd.DataFrame(
         {
