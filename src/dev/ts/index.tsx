@@ -1,12 +1,5 @@
 import "../css/index.scss";
+import App from "./index/App";
+import setup_react from "./common";
 
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "./components/App";
-
-ReactDOM.render(
-    <React.StrictMode>
-        <App />
-    </React.StrictMode>,
-    document.querySelector("#root")
-);
+setup_react(App);

@@ -1,10 +1,11 @@
 {
-  "name": "Skeletal-Physics",
+  "name": "ceneopinion",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
     "react": "^18.2.0",
+    "react-circular-progressbar": "^2.1.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
@@ -34,6 +35,6 @@
   },
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "dev": "concurrently \"flask --app src/app.py --debug run\" \"webpack serve --config webpack.config.dev.js\""
+    "dev": "concurrently \"poetry run flask --app src/app.py --debug run\" \"webpack serve --config webpack.config.dev.js\""
   }
 }
