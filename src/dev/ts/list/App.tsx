@@ -3,7 +3,7 @@ import { NavbarOptions } from "../common/Navbar";
 
 function App() {
     return (
-        <Navbar selected={NavbarOptions.Main}/>
+        <Navbar selected={NavbarOptions.List}/>
     );
 }
 
