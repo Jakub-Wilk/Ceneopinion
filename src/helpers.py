@@ -3,7 +3,7 @@ from dotenv import dotenv_values
 from montydb import MontyClient, MontyDatabase
 from pymongo import MongoClient
 from pymongo.database import Database
-from flask import Flask
+from flask import Flask, current_app
 import pandas as pd
 import requests
 import bs4
@@ -22,9 +22,19 @@ class ConfigurationError(Exception):
 def load_config(app: Flask):
     config = dotenv_values(".env")
 
+    if "REQUEST_COOLDOWN" not in config:
+        config["REQUEST_COOLDOWN"] = 1
+    else:
+        try:
+            config["REQUEST_COOLDOWN"] = float(config["REQUEST_COOLDOWN"])
+        except ValueError:
+            raise ConfigurationError("REQUEST_COOLDOWN must be a float!")
+        if config["REQUEST_COOLDOWN"] < 1:
+            print("Warning: REQUEST_COOLDOWN is lower than 1s, this could lead to Ceneo detecting the app as a DDOS attack and deploying a captcha!")
+
     if "SECRET_KEY" not in config:
         config["SECRET_KEY"] = "debug"
-        print("WARNING: SECRET_KEY not specified; Setting it to \"debug\". Change this before deploying in production!")
+        print("Warning: SECRET_KEY not specified; Setting it to \"debug\". Change this before deploying in production!")
 
     if "MONGO_MODE" not in config:
         config["MONGO_MODE"] = "monty"
@@ -73,17 +83,21 @@ class Reviews:
         return QueryResults(list(map(lambda x: x.find(*args, **kwargs), self)))
 
 
-def get_reviews_for_product(id: int) -> Reviews:
-    response = requests.get(f"https://www.ceneo.pl/{id}")
+def get_review_count_for_product(product_id: int) -> int:
+    response = requests.get(f"https://www.ceneo.pl/{product_id}")
 
     main_page = BeautifulSoup(response.text, features="html.parser")
     review_count = int(main_page.find(class_="product-review__link").find("span").string)
 
+    return review_count
+
+
+def get_n_reviews_for_product(review_count: int, product_id: int) -> Reviews:
     review_soups: list[BeautifulSoup] = []
     for i in range(1, review_count // 10 + 2):
-        sleep(1)
+        sleep(current_app.config["REQUEST_COOLDOWN"])
         r_soup = bs4.BeautifulSoup(
-            requests.get(f"https://www.ceneo.pl/{id}/opinie-{i}").text,
+            requests.get(f"https://www.ceneo.pl/{product_id}/opinie-{i}").text,
             features="html.parser"
         )
         review_soups.append(r_soup)
@@ -93,9 +107,10 @@ def get_reviews_for_product(id: int) -> Reviews:
     return Reviews(list(itertools.chain.from_iterable(reviews_from_each_soup)))
 
 
-def extract_product_info(id: int) -> pd.DataFrame:
+def extract_product_info(product_id: int) -> pd.DataFrame:
 
-    reviews = get_reviews_for_product(id)
+    review_count = get_review_count_for_product(product_id)
+    reviews = get_n_reviews_for_product(review_count, product_id)
 
     review_id = [x["data-entry-id"] for x in reviews]
     username = reviews.query(class_="user-post__author-name").extract(lambda x: x.string)
