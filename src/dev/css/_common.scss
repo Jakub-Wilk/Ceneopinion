@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+%navbar-button {
+    @apply w-64 h-full font-sans text-2xl whitespace-nowrap grid place-content-center border-l-2 border-ceneo;
+}
+
+.navbar-button-selected {
+    @extend %navbar-button;
+    @apply bg-ceneo text-white;
+}
+
+.navbar-button-idle {
+    @extend %navbar-button;
+    @apply text-ceneo hover:bg-ceneo hover:text-white transition;
+}

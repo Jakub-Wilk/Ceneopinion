@@ -4,29 +4,33 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
     entry: {
-        index: path.resolve(__dirname, "src/dev/ts/index.tsx")
+        index: path.resolve(__dirname, "src/dev/ts/index.tsx"),
+        product_details: path.resolve(__dirname, "src/dev/ts/product_details.tsx"),
+        extract: path.resolve(__dirname, "src/dev/ts/extract.tsx"),
+        list: path.resolve(__dirname, "src/dev/ts/list.tsx"),
+        about: path.resolve(__dirname, "src/dev/ts/about.tsx")
     },
     module: {
         rules: [
-        {
-            test: /\.ts?x?$/,
-            use: "ts-loader",
-            exclude: /node_modules/,
-        },
-        {
-            test: /\.s?css$/i,
-            use: [
-            MiniCssExtractPlugin.loader,
             {
-                loader: "css-loader",
-                options: {
-                sourceMap: true,
-                },
+                test: /\.ts?x?$/,
+                use: "ts-loader",
+                exclude: /node_modules/,
             },
-            "postcss-loader",
-            "sass-loader",
-            ],
-        },
+            {
+                test: /\.s?css$/i,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: "css-loader",
+                        options: {
+                            sourceMap: true,
+                        },
+                    },
+                    "postcss-loader",
+                    "sass-loader",
+                ],
+            },
         ],
     },
     resolve: {
@@ -38,8 +42,8 @@ module.exports = {
     },
     plugins: [
         new MiniCssExtractPlugin({
-        filename: "../css/[name].css",
-        chunkFilename: "../css/[id].css",
+            filename: "../css/[name].css",
+            chunkFilename: "../css/[id].css",
         }),
     ],
 };
