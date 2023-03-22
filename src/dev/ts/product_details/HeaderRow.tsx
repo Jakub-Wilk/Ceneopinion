@@ -9,22 +9,22 @@ interface HeaderRowProps {
     }
 }
 
-const header_translations = {
-    "ID": "ID",
-    "Username": "Użytkownik",
-    "Recommended": "Poleca",
-    "Stars": "Gwiazdki",
-    "Trusted": "Zaufana",
-    "Time Posted": "Czas recenzji",
-    "Time Bought": "Czas kupna",
-    "Upvotes": "Like'i",
-    "Downvotes": "Dislike'i",
-    "Content": "Treść",
-    "Positives": "Zalety",
-    "Negatives": "Wady"
-};
-
 function HeaderRow(props: HeaderRowProps) {
+
+    const header_translations = {
+        "ID": "ID",
+        "Username": "Użytkownik",
+        "Recommended": "Poleca",
+        "Stars": "Gwiazdki",
+        "Trusted": "Zaufana",
+        "Time Posted": "Czas recenzji",
+        "Time Bought": "Czas kupna",
+        "Upvotes": "Głosy +",
+        "Downvotes": "Głosy -",
+        "Content": "Treść",
+        "Positives": "Zalety",
+        "Negatives": "Wady"
+    };
 
     const cells = [];
 
