@@ -4,7 +4,7 @@
   </head>
   <body>
     <div id="root"></div>
-    <script>const data = {{ data }}</script>
+    <script>const data = {{ data|tojson }}</script>
     <script src="/static/js/{{ endpoint }}.js"></script>
   </body>
 </html>

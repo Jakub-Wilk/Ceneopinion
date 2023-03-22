@@ -1,6 +1,9 @@
 from flask import Flask, render_template, redirect, url_for, request
 from helpers import load_config, get_db, get_review_count_for_product, extract_product_info
-import time
+import json
+from datetime import datetime
+import math
+from pandas import DataFrame
 
 
 app = Flask(__name__, template_folder="./static/templates")
@@ -34,26 +37,46 @@ def extract():
 def details_get(product_id: int):
     product_data = db.products.find_one({"product_id": product_id})
     if not product_data:
+        queue_data = db.queue.find_one({"product_id": product_id})
         review_data = {}
         review_count = get_review_count_for_product(product_id)
+        delay = review_count // 10 + 2
+        if not queue_data:
+            elapsed = 0
+        else:
+            delta = datetime.utcnow() - queue_data["start_time"]
+            elapsed = delta.seconds + math.ceil(delta.microseconds / 1000000)
         delay = review_count // 10 + 1
     else:
         review_data = product_data["review_data"]
+        df = DataFrame.from_dict(review_data)
+        sort, ascending = request.args.get("sort", None), int(request.args.get("asc", 0))
+        if sort:
+            df.sort_values(sort, ascending=bool(ascending), inplace=True)
         delay = None
+        elapsed = None
     return render_template("index.html", endpoint="product_details", data={
         "product_id": product_id,
         "cooldown": app.config["REQUEST_COOLDOWN"],
+        "elapsed": elapsed,
         "delay": delay,
+        "review_data": df.to_dict(orient="list"),
         "review_data": review_data
     })
 
 
 @app.post("/product/<int:product_id>")
 def details_post(product_id: int):
-    # product_info = extract_product_info(product_id)
-    # return product_info.to_json()
-    time.sleep(5)
-    return "Success!"
+    if db.products.find_one({"product_id": product_id}):
+        return json.dumps({"state": "exists"})
+    elif db.queue.find_one({"product_id": product_id}):
+        return json.dumps({"state": "in_progress"})
+    else:
+        db.queue.insert_one({"product_id": product_id, "start_time": datetime.utcnow()})
+        product_info = extract_product_info(product_id)
+        db.queue.delete_one({"product_id": product_id})
+        db.products.insert_one({"product_id": product_id, "review_data": product_info.to_dict()})
+        return json.dumps({"state": "completed"})
 
 
 @app.get("/about")

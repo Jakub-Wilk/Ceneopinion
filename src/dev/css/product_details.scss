@@ -1,1 +1,112 @@
 @use 'common';
+.animated-ellipsis {
+    @apply inline-block ml-1;
+    animation: ellipsis-bounce 2s ease-in infinite normal forwards;
+}
+
+.animated-ellipsis:nth-child(1) {
+    animation-delay: 0;
+}
+
+.animated-ellipsis:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.animated-ellipsis:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.table-cell {
+    @apply w-36 border-ceneo border-r border-y flex justify-center items-center text-center py-2;
+}
+
+.table-cell svg {
+    @apply ml-1;
+}
+
+.table-cell:has(svg) {
+    @apply font-semibold;
+}
+
+.table-cell:nth-child(-n + 5), .table-cell:nth-child(n + 8):nth-child(-n + 9) {
+    @apply w-28;
+}
+
+.table-cell:nth-child(3) {
+    @apply w-36;
+}
+
+.table-cell:nth-child(10) {
+    @apply w-64;
+}
+
+.table-cell:nth-child(n + 11):nth-child(-n + 12) {
+    @apply w-44 flex-col;
+}
+
+.table-cell:not(:nth-child(1)) {
+    @apply border;
+}
+
+.table-cell:last-child {
+    @apply border-r-0;
+}
+
+.table-row:nth-child(1)  {
+    .table-cell {
+        @apply border-t-0;
+    }
+    .table-cell:not(:has(svg)) {
+        @apply cursor-pointer hover:font-semibold;
+    }
+}
+
+.table-row {
+    @apply flex w-fit;
+}
+
+@keyframes ellipsis-bounce {
+	0% {
+		animation-timing-function: ease-in;
+		opacity: 1;
+		transform: translateY(-4.5px);
+	}
+
+	12% {
+		opacity: 1;
+	}
+
+	20% {
+		animation-timing-function: ease-in;
+		transform: translateY(-2.4px);
+	}
+
+	33% {
+		animation-timing-function: ease-in;
+		transform: translateY(-1.2px);
+	}
+
+	41% {
+		animation-timing-function: ease-in;
+		transform: translateY(-.6px);
+	}
+
+	47% {
+		animation-timing-function: ease-in;
+		transform: translateY(-.4px);
+	}
+
+	12%,
+	27%,
+	37%,
+	44% {
+		animation-timing-function: ease-out;
+		transform: translateY(0px);
+	}
+
+	50% {
+		animation-timing-function: ease-out;
+		opacity: 1;
+		transform: translateY(0px);
+	}
+}

@@ -115,12 +115,12 @@ def extract_product_info(product_id: int) -> pd.DataFrame:
     review_id = [x["data-entry-id"] for x in reviews]
     username = reviews.query(class_="user-post__author-name").extract(lambda x: x.string)
     recommended = [bool(x) for x in reviews.query(class_="recommended")]
-    stars = reviews.query(class_="user-post__score-count").extract(lambda x: x.string)
+    stars = reviews.query(class_="user-post__score-count").extract(lambda x: float(x.string.split("/")[0].replace(",", ".")))
     trusted = [bool(x) for x in reviews.query(class_="review-pz")]
     time_posted = reviews.query("time").extract(lambda x: x["datetime"])
     time_bought = reviews.query("time").extract(lambda x: x.find_next_sibling()["datetime"] if x.find_next_sibling() else None)
-    votes_yes = reviews.query(class_="vote-yes").extract(lambda x: x["data-total-vote"])
-    votes_no = reviews.query(class_="vote-no").extract(lambda x: x["data-total-vote"])
+    votes_yes = reviews.query(class_="vote-yes").extract(lambda x: int(x["data-total-vote"]))
+    votes_no = reviews.query(class_="vote-no").extract(lambda x: int(x["data-total-vote"]))
     content = reviews.query(class_="user-post__text").extract(lambda x: x.string)
     positives = reviews.query(class_="review-feature__title--positives").extract(lambda x: [x.string for x in x.find_next_siblings()])
     negatives = reviews.query(class_="review-feature__title--negatives").extract(lambda x: [x.string for x in x.find_next_siblings()])
