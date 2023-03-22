@@ -21,9 +21,9 @@ function DataRow(props: DataRowProps) {
                 content.push(<span key={`${props.row_number}${header}${data}`}>{data != data_extracted[data_extracted.length-1] ? `${data},` : data}</span>);
             }
         } else if (typeof data_extracted === "boolean") {
-            content.push(data_extracted ? <FaCheckCircle color="#2ecc71" /> : <FaTimesCircle color="#e74c3c" />);
+            content.push(data_extracted ? <FaCheckCircle key={`${props.row_number}_`} color="#2ecc71" /> : <FaTimesCircle key={`${props.row_number}${header}_`} color="#e74c3c" />);
         } else if (header == "Stars" && typeof data_extracted === "number") {
-            content.push(<Stars count={data_extracted}/>);
+            content.push(<Stars key={`${props.row_number}${header}_`} count={data_extracted}/>);
         } else if (header == "Upvotes" && typeof data_extracted === "number") {
             content.push(<span key={`${props.row_number}${header}_`} className="text-[#27ae60] font-semibold">{data_extracted?.toString()}</span>);
         } else if (header == "Downvotes" && typeof data_extracted === "number") {

@@ -46,13 +46,35 @@ def details_get(product_id: int):
         else:
             delta = datetime.utcnow() - queue_data["start_time"]
             elapsed = delta.seconds + math.ceil(delta.microseconds / 1000000)
-        delay = review_count // 10 + 1
+        filter_data = None
     else:
         review_data = product_data["review_data"]
         df = DataFrame.from_dict(review_data)
         sort, ascending = request.args.get("sort", None), int(request.args.get("asc", 0))
         if sort:
             df.sort_values(sort, ascending=bool(ascending), inplace=True)
+        filter_data = {
+            "Stars": {
+                "min": float(df["Stars"].dropna().min()),
+                "max": float(df["Stars"].dropna().max())
+            },
+            "Time Posted": {
+                "min": df["Time Posted"].dropna().min(),
+                "max": df["Time Posted"].dropna().max()
+            },
+            "Time Bought": {
+                "min": df["Time Bought"].dropna().min(),
+                "max": df["Time Bought"].dropna().max()
+            },
+            "Upvotes": {
+                "min": int(df["Upvotes"].dropna().min()),
+                "max": int(df["Upvotes"].dropna().max())
+            },
+            "Downvotes": {
+                "min": int(df["Downvotes"].dropna().min()),
+                "max": int(df["Downvotes"].dropna().max())
+            }
+        }
         delay = None
         elapsed = None
     return render_template("index.html", endpoint="product_details", data={
@@ -61,7 +83,7 @@ def details_get(product_id: int):
         "elapsed": elapsed,
         "delay": delay,
         "review_data": df.to_dict(orient="list"),
-        "review_data": review_data
+        "filter_data": filter_data
     })
 
 
