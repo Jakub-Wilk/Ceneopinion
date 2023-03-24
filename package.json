@@ -4,11 +4,15 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@kurkle/color": "^0.3.1",
     "@wojtekmaj/react-daterange-picker": "^4.2.0",
+    "chart.js": "^4.2.1",
+    "chartjs-plugin-autocolors": "^0.2.2",
     "date-fns": "^2.29.3",
     "deep-equal": "^2.2.0",
     "rc-slider": "^10.1.1",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
     "react-circular-progressbar": "^2.1.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0"
