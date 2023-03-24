@@ -2,7 +2,7 @@ import { Pie, Bar } from "react-chartjs-2";
 import { Data } from "../charts";
 import Navbar from "../common/Navbar";
 import { NavbarOptions } from "../common/Navbar";
-import ProductCard from "../common/ProductCard";
+import ProductCard, { CardType } from "../common/ProductCard";
 
 declare let data: Data;
 
@@ -17,6 +17,7 @@ function App() {
         <Navbar selected={NavbarOptions.Extract}/>
         <div className="flex justify-center">
             <ProductCard 
+                type={CardType.Chart}
                 name={data.product_overview.product_name}
                 photo_url={data.product_overview.photo_url}
                 pros={data.product_overview.pros_count}
