@@ -8,7 +8,8 @@ module.exports = {
         product_details: path.resolve(__dirname, "src/dev/ts/product_details.tsx"),
         extract: path.resolve(__dirname, "src/dev/ts/extract.tsx"),
         list: path.resolve(__dirname, "src/dev/ts/list.tsx"),
-        about: path.resolve(__dirname, "src/dev/ts/about.tsx")
+        about: path.resolve(__dirname, "src/dev/ts/about.tsx"),
+        charts: path.resolve(__dirname, "src/dev/ts/charts.tsx")
     },
     module: {
         rules: [

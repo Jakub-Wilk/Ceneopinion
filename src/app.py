@@ -117,6 +117,43 @@ def download(product_id: int, ext: str):
                 return send_file(io.BytesIO(str.encode(df.to_json())), mimetype="application/json")
 
 
+@app.get("/product/<int:product_id>/charts")
+def charts(product_id: int):
+    product_data = db.products.find_one({"product_id": product_id})
+    if not product_data:
+        return redirect(url_for("details_get", product_id=product_id))
+    else:
+        product_data = product_data["review_data"]
+        product_data["review_data"] = pd.DataFrame(product_data["review_data"])
+        product = Product(**product_data)
+        pros = product.review_data["positives"].explode().value_counts()
+        stars = product.review_data["stars"].value_counts()
+        return render_template("index.html", endpoint="charts", data={
+            "pie": {
+                "labels": pros.index.tolist(),
+                "datasets": [{
+                    "label": " Ilość opinii zawierających daną zaletę",
+                    "data": pros.values.tolist()
+                }]
+            },
+            "bar": {
+                "labels": stars.index.tolist(),
+                "datasets": [{
+                    "label": " Ilość opinii z daną liczbą gwiazdek",
+                    "data": stars.values.tolist()
+                }]
+            },
+            "product_overview": {
+                "photo_url": product.photo_url,
+                "product_name": product.product_name,
+                "review_count": product.review_count,
+                "pros_count": product.pros_count,
+                "cons_count": product.cons_count,
+                "avg_rating": product.avg_rating
+            }
+        })
+
+
 @app.get("/about")
 def about():
     return render_template("index.html", endpoint="about", data={})
