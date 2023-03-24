@@ -3,6 +3,15 @@ import ReactDOM from "react-dom/client";
 
 type App = (props?: any) => JSX.Element;
 
+export interface ProductOverview {
+    "photo_url": string,
+    "product_name": string,
+    "review_count": number,
+    "pros_count": number,
+    "cons_count": number,
+    "avg_rating": number
+}
+
 export interface ReviewData {
     "ID": Record<string, string | null>,
     "Username": Record<string, string | null>,

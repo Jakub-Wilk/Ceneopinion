@@ -1,7 +1,7 @@
 import "../css/product_details.scss";
 import App from "./product_details/App";
 import setup_react from "./common";
-import { ReviewData } from "./common";
+import { ReviewData, ProductOverview } from "./common";
 
 interface TrueFalse {
     true: boolean,
@@ -34,10 +34,11 @@ export interface Filters extends FilterData {
 export interface Data {
     product_id: number,
     cooldown: number,
+    elapsed: number | null,
     delay: number | null,
-    elapsed: number | null
     review_data: ReviewData,
-    filter_data: FilterData
+    filter_data: FilterData,
+    product_overview: ProductOverview
 }
 
 setup_react(App);
