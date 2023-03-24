@@ -1,6 +1,4 @@
-import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import { Data } from "../product_details";
-import Stars from "../common/Stars";
 import ProductCard, { CardType } from "../common/ProductCard";
 
 interface ProductGalleryProps {

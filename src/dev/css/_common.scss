@@ -15,3 +15,7 @@
     @extend %navbar-button;
     @apply text-ceneo hover:bg-ceneo hover:text-white transition;
 }
+
+.button {
+    @apply bg-ceneo w-48 h-10 rounded grid place-content-center text-white text-xl cursor-pointer hover:bg-orange-500 select-none transition;
+ }

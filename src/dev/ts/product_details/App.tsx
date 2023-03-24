@@ -40,7 +40,7 @@ function App() {
 
     return (
         <div className="flex flex-col h-screen w-screen overflow-x-hidden">
-            <Navbar selected={NavbarOptions.Extract} />
+            <Navbar selected={NavbarOptions.List} />
             <div className="h-full w-full">
                 {content}
             </div>
