@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, send_file
-from helpers import load_config, get_db, get_basic_info_for_product, extract_product_info, Product
+from helpers import load_config, get_db, get_basic_info_for_product, extract_product_info, Product, check_if_product_exists
 import json
 from datetime import datetime
 import math
@@ -23,7 +23,7 @@ def index():
 
 @app.get("/product")
 def product():
-    return redirect(url_for("list"))
+    return redirect(url_for("list_products"))
 
 
 @app.get("/product/list")
@@ -36,7 +36,19 @@ def list_products():
 
 @app.get("/product/extract")
 def extract():
-    return render_template("index.html", endpoint="extract", data={})
+    product_id = int(request.args.get("pid", 0))
+    if product_id:
+        exists = check_if_product_exists(product_id)
+        if exists:
+            return redirect(url_for("details_get", product_id=product_id))
+        else:
+            return render_template("index.html", endpoint="extract", data={
+                "show_error": True
+            })
+    else:
+        return render_template("index.html", endpoint="extract", data={
+            "show_error": False
+        })
 
 
 @app.get("/product/<int:product_id>")

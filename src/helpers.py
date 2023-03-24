@@ -120,13 +120,22 @@ class Product:
             "cons_count": self.cons_count,
             "avg_rating": self.avg_rating
         }
+    
+
+def check_if_product_exists(product_id: int) -> bool:
+    response = requests.get(f"https://www.ceneo.pl/{product_id}")
+    return response.status_code != 404
 
 
 def get_basic_info_for_product(product_id: int) -> tuple(int, str, str):
     response = requests.get(f"https://www.ceneo.pl/{product_id}#tab=reviews")
 
     main_page = BeautifulSoup(response.text, features="html.parser")
-    review_count = int(main_page.find(class_="product-review__link").find("span").string)
+    product_review_link = main_page.find(class_="product-review__link")
+    if product_review_link.find("span"):
+        review_count = int(product_review_link.find("span").string)
+    else:
+        review_count = 0
     photo_url = main_page.find(class_="gallery-carousel__media")["src"]
     product_name = main_page.find(class_="card-outer-title").find("strong").string
 
@@ -146,6 +155,20 @@ def get_n_reviews_for_product(review_count: int, product_id: int) -> Reviews:
     reviews_from_each_soup = [soup.find_all(class_="js_product-review") for soup in review_soups]
 
     return Reviews(list(itertools.chain.from_iterable(reviews_from_each_soup)))
+
+
+def safe_int(content) -> int:
+    try:
+        return int(content)
+    except ValueError:
+        return 0
+
+
+def safe_float(content) -> int:
+    try:
+        return int(content)
+    except ValueError:
+        return 0
 
 
 def extract_product_info(product_id: int) -> Product:
@@ -185,8 +208,8 @@ def extract_product_info(product_id: int) -> Product:
 
     filter_ranges = {
         "stars": {
-            "min": float(df["stars"].dropna().min()),
-            "max": float(df["stars"].dropna().max())
+            "min": safe_float(df["stars"].dropna().min()),
+            "max": safe_float(df["stars"].dropna().max())
         },
         "time_posted": {
             "min": df["time_posted"].dropna().min(),
@@ -197,12 +220,12 @@ def extract_product_info(product_id: int) -> Product:
             "max": df["time_bought"].dropna().max()
         },
         "upvotes": {
-            "min": int(df["upvotes"].dropna().min()),
-            "max": int(df["upvotes"].dropna().max())
+            "min": safe_int(df["upvotes"].dropna().min()),
+            "max": safe_int(df["upvotes"].dropna().max())
         },
         "downvotes": {
-            "min": int(df["downvotes"].dropna().min()),
-            "max": int(df["downvotes"].dropna().max())
+            "min": safe_int(df["downvotes"].dropna().min()),
+            "max": safe_int(df["downvotes"].dropna().max())
         }
     }
 
