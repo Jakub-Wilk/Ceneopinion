@@ -10,7 +10,9 @@ interface ProductShowcaseProps {
 function ProductShowcase(props: ProductShowcaseProps) {
     return <div className="flex flex-col items-center">
         <ProductGallery data={props.data} />
-        <FilteringOptions data={props.data}/>
+        {props.data.product_overview.review_count > 0
+            ? <FilteringOptions data={props.data}/>
+            : null}
         <div>
             <ReviewsTable data={props.data} />
         </div>
