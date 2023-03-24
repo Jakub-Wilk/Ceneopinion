@@ -57,7 +57,11 @@ $ceneo-light: #F97316;
 }
 
 .filter-label {
-    @apply mt-4;
+    @apply mt-4 flex items-center gap-1;
+
+    svg {
+        @apply w-3/5 h-3/5 translate-y-0.5;
+    }
 }
 
 .rc-slider-track {
@@ -107,7 +111,7 @@ $ceneo-light: #F97316;
     @apply ml-1;
 }
 
-.table-cell:has(svg) {
+.header-selected {
     @apply font-semibold;
 }
 
@@ -139,7 +143,7 @@ $ceneo-light: #F97316;
     .table-cell {
         @apply border-t-0;
     }
-    .table-cell:not(:has(svg)) {
+    .table-cell:not(.header-selected) {
         @apply cursor-pointer hover:font-semibold;
     }
 }

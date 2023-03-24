@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaCheckSquare, FaFilter, FaSquare, FaWindowClose } from "react-icons/fa";
+import { FaCheckSquare, FaFilter, FaMinusCircle, FaPlusCircle, FaSquare, FaWindowClose } from "react-icons/fa";
 import { Data, Filters } from "../product_details";
 import DateRangePicker, { DateRangePickerProps } from "@wojtekmaj/react-daterange-picker";
 import "@wojtekmaj/react-daterange-picker/dist/DateRangePicker.css";
@@ -7,28 +7,31 @@ import "react-calendar/dist/Calendar.css";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import Stars from "./Stars";
+import equal from "deep-equal";
 
 interface FilteringOptionsProps {
     data: Data
 }
 
 function FilteringOptions(props: FilteringOptionsProps) {
-    const [isVisible, setVisible] = useState(true);
+    const [isVisible, setVisible] = useState(false);
 
     const toggleVisible = () => {
         setVisible(!isVisible);
     };
 
     const time_posted = {
-        "max": new Date(props.data.filter_data["Time Posted"].max),
-        "min": new Date(props.data.filter_data["Time Posted"].min)
+        min: new Date(props.data.filter_data["Time Posted"].min),
+        max: new Date(props.data.filter_data["Time Posted"].max)
     };
 
     const time_bought = {
-        "max": new Date(props.data.filter_data["Time Bought"].max),
-        "min": new Date(props.data.filter_data["Time Bought"].min)
+        min: new Date(props.data.filter_data["Time Bought"].min),
+        max: new Date(props.data.filter_data["Time Bought"].max)
     };
 
+    const urlparams = new URLSearchParams(location.search);
+    
     const filter_bounds: Filters = {
         "Recommended": {true: true, false: true},
         "Trusted": {true: true, false: true},
@@ -38,14 +41,30 @@ function FilteringOptions(props: FilteringOptionsProps) {
         "Upvotes": props.data.filter_data["Upvotes"],
         "Downvotes": props.data.filter_data["Downvotes"]
     };
+
+    let filters: Filters;
+    if (urlparams.has("filters")) {
+        filters = JSON.parse(decodeURIComponent(atob(urlparams.get("filters")!)));
+        filters["Time Posted"] = {
+            min: new Date(filters["Time Posted"].min),
+            max: new Date(filters["Time Posted"].max)
+        };
+        filters["Time Bought"] = {
+            min: new Date(filters["Time Bought"].min),
+            max: new Date(filters["Time Bought"].max)
+        };
+    } else {
+        filters = filter_bounds;
+    }
     
-    const [recommendedState, setRecommendedState] = useState(filter_bounds["Recommended"]);
-    const [trustedState, setTrustedState] = useState(filter_bounds["Trusted"]);
-    const [timePostedRange, setTimePostedRange] = useState<DateRangePickerProps["value"]>([filter_bounds["Time Posted"].min, filter_bounds["Time Posted"].max]);
-    const [timeBoughtRange, setTimeBoughtRange] = useState<DateRangePickerProps["value"]>([filter_bounds["Time Bought"].min, filter_bounds["Time Bought"].max]);
-    const [starsRange, setStarsRange] = useState([filter_bounds["Stars"].min, filter_bounds["Stars"].max]);
-    const [upvotesRange, setUpvotesRange] = useState([filter_bounds["Upvotes"].min, filter_bounds["Upvotes"].max]);
-    const [downvotesRange, setDownvotesRange] = useState([filter_bounds["Downvotes"].min, filter_bounds["Downvotes"].max]);
+    
+    const [recommendedState, setRecommendedState] = useState(filters["Recommended"]);
+    const [trustedState, setTrustedState] = useState(filters["Trusted"]);
+    const [timePostedRange, setTimePostedRange] = useState<DateRangePickerProps["value"]>([filters["Time Posted"].min, filters["Time Posted"].max]);
+    const [timeBoughtRange, setTimeBoughtRange] = useState<DateRangePickerProps["value"]>([filters["Time Bought"].min, filters["Time Bought"].max]);
+    const [starsRange, setStarsRange] = useState([filters["Stars"].min, filters["Stars"].max]);
+    const [upvotesRange, setUpvotesRange] = useState([filters["Upvotes"].min, filters["Upvotes"].max]);
+    const [downvotesRange, setDownvotesRange] = useState([filters["Downvotes"].min, filters["Downvotes"].max]);
 
     const apply_filters = () => {
         const filters: Filters = {
@@ -56,12 +75,12 @@ function FilteringOptions(props: FilteringOptionsProps) {
                 max: starsRange[1]
             },
             "Time Posted": {
-                min: timePostedRange as Date[][0],
-                max: timePostedRange as Date[][1]
+                min: (timePostedRange as Date[])[0],
+                max: (timePostedRange as Date[])[1]
             },
             "Time Bought": {
-                min: timeBoughtRange as Date[][0],
-                max: timeBoughtRange as Date[][1]
+                min: (timeBoughtRange as Date[])[0],
+                max: (timeBoughtRange as Date[])[1]
             },
             "Upvotes": {
                 min: upvotesRange[0],
@@ -73,9 +92,15 @@ function FilteringOptions(props: FilteringOptionsProps) {
             }
         };
 
-        const payload = btoa(encodeURIComponent(JSON.stringify(filters)));
+        
         const urlparams = new URLSearchParams(location.search);
-        urlparams.set("filters", payload);
+        if (!equal(filters, filter_bounds)) {
+            const payload = btoa(encodeURIComponent(JSON.stringify(filters)));
+            urlparams.set("filters", payload);
+        } else {
+            urlparams.delete("filters");
+        }
+        
         location.search = urlparams.toString();
     };
 
@@ -137,7 +162,7 @@ function FilteringOptions(props: FilteringOptionsProps) {
                     maxDate={filter_bounds["Time Bought"].max}
                     closeCalendar={false}
                 />
-                <div className="filter-label">Głosy +:</div>
+                <div className="filter-label">Głosy <FaPlusCircle color="#27ae60" />:</div>
                 <div className="w-4/5">
                     <Slider
                         range
@@ -153,7 +178,7 @@ function FilteringOptions(props: FilteringOptionsProps) {
                     <span>-</span>
                     <span>{upvotesRange[1]}</span>
                 </div>
-                <div className="filter-label">Głosy -:</div>
+                <div className="filter-label">Głosy <FaMinusCircle color="#c0392b" />:</div>
                 <div className="w-4/5">
                     <Slider
                         range

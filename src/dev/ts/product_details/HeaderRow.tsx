@@ -1,5 +1,5 @@
 import { SortDirection } from "./ReviewsTable";
-import { FaSortAmountDown, FaSortAmountUpAlt } from "react-icons/fa";
+import { FaMinusCircle, FaPlusCircle, FaSortAmountDown, FaSortAmountUpAlt } from "react-icons/fa";
 
 interface HeaderRowProps {
     headers: Array<string>,
@@ -19,11 +19,18 @@ function HeaderRow(props: HeaderRowProps) {
         "Trusted": "Zaufana",
         "Time Posted": "Czas recenzji",
         "Time Bought": "Czas kupna",
-        "Upvotes": "Głosy +",
-        "Downvotes": "Głosy -",
+        "Upvotes": <>{"Głosy "}<FaPlusCircle className="translate-y-0.5" color="#27ae60" /></>,
+        "Downvotes": <>{"Głosy "}<FaMinusCircle className="translate-y-0.5" color="#c0392b" /></>,
         "Content": "Treść",
         "Positives": "Zalety",
         "Negatives": "Wady"
+    };
+
+    const get_href = (header: string, alt_direction: string) => {
+        const urlparams = new URLSearchParams(location.search);
+        urlparams.set("sort", header);
+        urlparams.set("asc", alt_direction);
+        return `${location.pathname}?${urlparams.toString()}`;
     };
 
     const cells = [];
@@ -31,6 +38,7 @@ function HeaderRow(props: HeaderRowProps) {
     for (const header of props.headers) {
         let icon = null;
         let alt_direction = "0";
+        let selected = "";
         if (header == props.sort.field && props.sort.direction != SortDirection.None) {
             switch (props.sort.direction) {
                 case SortDirection.Asc:
@@ -42,12 +50,13 @@ function HeaderRow(props: HeaderRowProps) {
                     alt_direction = "1";
                     break;
             }
+            selected = "header-selected";
         }
         cells.push(
             <a
-                className="table-cell"
+                className={`table-cell ${selected}`}
                 key={header}
-                href={`${location.pathname}?sort=${header}&asc=${alt_direction}`}
+                href={get_href(header, alt_direction)}
             >
                 {header_translations[header as keyof typeof header_translations]}{icon}
             </a>

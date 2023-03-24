@@ -25,9 +25,11 @@ function DataRow(props: DataRowProps) {
         } else if (header == "Stars" && typeof data_extracted === "number") {
             content.push(<Stars key={`${props.row_number}${header}_`} count={data_extracted}/>);
         } else if (header == "Upvotes" && typeof data_extracted === "number") {
-            content.push(<span key={`${props.row_number}${header}_`} className="text-[#27ae60] font-semibold">{data_extracted?.toString()}</span>);
+            content.push(<span key={`${props.row_number}${header}_`} className="text-[#27ae60] font-semibold">{data_extracted.toString()}</span>);
         } else if (header == "Downvotes" && typeof data_extracted === "number") {
-            content.push(<span key={`${props.row_number}${header}_`} className="text-[#c0392b] font-semibold">{data_extracted?.toString()}</span>);
+            content.push(<span key={`${props.row_number}${header}_`} className="text-[#c0392b] font-semibold">{data_extracted.toString()}</span>);
+        } else if (["Time Posted", "Time Bought"].includes(header) && typeof data_extracted === "string") {
+            content.push(<span key={`${props.row_number}${header}_`}>{new Date(data_extracted).toLocaleString()}</span>);
         } else {
             content.push(<span key={`${props.row_number}${header}_`}>{data_extracted?.toString()}</span>);
         }
