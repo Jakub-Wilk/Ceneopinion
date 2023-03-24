@@ -1,1 +1,203 @@
 @use 'common';
+
+$ceneo: #FF6400;
+$ceneo-light: #F97316;
+
+.animated-ellipsis {
+    @apply inline-block ml-1;
+    animation: ellipsis-bounce 2s ease-in infinite normal forwards;
+}
+
+.animated-ellipsis:nth-child(1) {
+    animation-delay: 0;
+}
+
+.animated-ellipsis:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.animated-ellipsis:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.filter {
+    @apply fixed top-1/2 -translate-y-1/2 h-4/5 w-96 z-10 flex items-center justify-start transition-all;
+}
+
+.filter-hidden {
+    @apply -left-96;
+}
+
+.filter-visible {
+    @apply left-0;
+}
+
+.filter-button {
+    @apply w-14 h-14 bg-white p-3 border-ceneo border transition-all rounded absolute cursor-pointer;
+}
+
+.filter-button-hidden {
+    @apply right-96;
+}
+
+.filter-button-visible {
+    @apply -right-20 hover:-right-[5.5rem];
+}
+
+.button {
+   @apply bg-ceneo w-48 h-10 rounded grid place-content-center text-white text-xl cursor-pointer hover:bg-orange-500 select-none transition;
+}
+
+.check-list {
+    @apply w-4/5 flex flex-col items-start;
+
+    .check {
+        @apply flex w-full ml-4 items-center cursor-pointer;
+
+        svg {
+            @apply w-4 h-4 mr-2 fill-ceneo;
+        }
+    }
+}
+
+.filter-label {
+    @apply mt-4 flex items-center gap-1;
+
+    svg {
+        @apply w-3/5 h-3/5 translate-y-0.5;
+    }
+}
+
+.rc-slider-track {
+    background-color: $ceneo !important;
+}
+
+.rc-slider-handle {
+    border-color: $ceneo !important;
+}
+
+.rc-slider-handle-dragging {
+    box-shadow: 0 0 0 5px $ceneo-light !important;
+}
+
+.react-daterange-picker__inputGroup {
+    @apply flex justify-center;
+}
+
+.react-date-picker__inputGroup__divider {
+    @apply translate-y-0.5;
+}
+
+.react-calendar__tile--active {
+    background-color: $ceneo !important;
+}
+
+.react-calendar__tile--active:hover {
+    background-color: $ceneo-light !important;
+}
+
+.react-calendar__tile--hasActive {
+    background-color: $ceneo-light !important;
+    color: white !important;
+}
+
+.react-daterange-picker__button:hover {
+    svg {
+        stroke: $ceneo !important;
+    }
+}
+
+.table-cell {
+    @apply w-36 border-ceneo border-r border-y flex justify-center items-center text-center py-2;
+}
+
+.table-cell svg {
+    @apply ml-1;
+}
+
+.header-selected {
+    @apply font-semibold;
+}
+
+.table-cell:nth-child(-n + 5), .table-cell:nth-child(n + 8):nth-child(-n + 9) {
+    @apply w-28;
+}
+
+.table-cell:nth-child(3) {
+    @apply w-36;
+}
+
+.table-cell:nth-child(10) {
+    @apply w-64;
+}
+
+.table-cell:nth-child(n + 11):nth-child(-n + 12) {
+    @apply w-44 flex-col;
+}
+
+.table-cell:not(:nth-child(1)) {
+    @apply border;
+}
+
+.table-cell:last-child {
+    @apply border-r-0;
+}
+
+.table-row:nth-child(1)  {
+    .table-cell {
+        @apply border-t-0;
+    }
+    .table-cell:not(.header-selected) {
+        @apply cursor-pointer hover:font-semibold;
+    }
+}
+
+.table-row {
+    @apply flex w-fit;
+}
+
+@keyframes ellipsis-bounce {
+	0% {
+		animation-timing-function: ease-in;
+		opacity: 1;
+		transform: translateY(-4.5px);
+	}
+
+	12% {
+		opacity: 1;
+	}
+
+	20% {
+		animation-timing-function: ease-in;
+		transform: translateY(-2.4px);
+	}
+
+	33% {
+		animation-timing-function: ease-in;
+		transform: translateY(-1.2px);
+	}
+
+	41% {
+		animation-timing-function: ease-in;
+		transform: translateY(-.6px);
+	}
+
+	47% {
+		animation-timing-function: ease-in;
+		transform: translateY(-.4px);
+	}
+
+	12%,
+	27%,
+	37%,
+	44% {
+		animation-timing-function: ease-out;
+		transform: translateY(0px);
+	}
+
+	50% {
+		animation-timing-function: ease-out;
+		opacity: 1;
+		transform: translateY(0px);
+	}
+}

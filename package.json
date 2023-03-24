@@ -4,13 +4,21 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@wojtekmaj/react-daterange-picker": "^4.2.0",
+    "date-fns": "^2.29.3",
+    "deep-equal": "^2.2.0",
+    "rc-slider": "^10.1.1",
     "react": "^18.2.0",
     "react-circular-progressbar": "^2.1.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.8.0"
   },
   "devDependencies": {
+    "@types/deep-equal": "^1.0.1",
     "@types/react": "^18.0.28",
+    "@types/react-date-range": "^1.4.4",
     "@types/react-dom": "^18.0.11",
+    "@types/wojtekmaj__react-daterange-picker": "^3.4.2",
     "@typescript-eslint/eslint-plugin": "^5.54.1",
     "@typescript-eslint/parser": "^5.54.1",
     "concurrently": "^7.6.0",

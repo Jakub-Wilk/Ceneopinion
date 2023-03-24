@@ -3,7 +3,7 @@ from dotenv import dotenv_values
 from montydb import MontyClient, MontyDatabase
 from pymongo import MongoClient
 from pymongo.database import Database
-from flask import Flask
+from flask import Flask, current_app
 import pandas as pd
 import requests
 import bs4
@@ -12,6 +12,7 @@ from time import sleep
 from bs4 import BeautifulSoup, Tag
 from dataclasses import dataclass
 from typing import Iterator, Callable
+from datetime import datetime
 
 
 class ConfigurationError(Exception):
@@ -22,9 +23,19 @@ class ConfigurationError(Exception):
 def load_config(app: Flask):
     config = dotenv_values(".env")
 
+    if "REQUEST_COOLDOWN" not in config:
+        config["REQUEST_COOLDOWN"] = 1
+    else:
+        try:
+            config["REQUEST_COOLDOWN"] = float(config["REQUEST_COOLDOWN"])
+        except ValueError:
+            raise ConfigurationError("REQUEST_COOLDOWN must be a float!")
+        if config["REQUEST_COOLDOWN"] < 1:
+            print("Warning: REQUEST_COOLDOWN is lower than 1s, this could lead to Ceneo detecting the app as a DDOS attack and deploying a captcha!")
+
     if "SECRET_KEY" not in config:
         config["SECRET_KEY"] = "debug"
-        print("WARNING: SECRET_KEY not specified; Setting it to \"debug\". Change this before deploying in production!")
+        print("Warning: SECRET_KEY not specified; Setting it to \"debug\". Change this before deploying in production!")
 
     if "MONGO_MODE" not in config:
         config["MONGO_MODE"] = "monty"
@@ -73,17 +84,61 @@ class Reviews:
         return QueryResults(list(map(lambda x: x.find(*args, **kwargs), self)))
 
 
-def get_reviews_for_product(id: int) -> Reviews:
-    response = requests.get(f"https://www.ceneo.pl/{id}")
+@dataclass
+class Product:
+    review_data: pd.DataFrame
+    filter_ranges: dict[str, dict[str, float | str | int]]
+    photo_url: str
+    product_name: str
+    review_count: int
+    pros_count: int
+    cons_count: int
+    avg_rating: int
+
+    def sort(self, field: str, ascending: bool):
+        self.review_data.sort_values(field, ascending=ascending, inplace=True)
+
+    def filter(self, filters: dict[str, dict[str, float | str | int]]):
+        df = self.review_data
+        df = df[df["recommended"].isin([k == "true" for k, v in filters["recommended"].items() if v])]
+        df = df[df["trusted"].isin([k == "true" for k, v in filters["trusted"].items() if v])]
+        df = df[df["stars"].between(filters["stars"]["min"], filters["stars"]["max"])]
+        df = df[df["time_posted"].between(filters["time_posted"]["min"], filters["time_posted"]["max"])]
+        df = df[df["time_bought"].between(filters["time_bought"]["min"], filters["time_bought"]["max"]) | df["time_bought"].isna()]
+        df = df[df["upvotes"].between(filters["upvotes"]["min"], filters["upvotes"]["max"])]
+        df = df[df["downvotes"].between(filters["downvotes"]["min"], filters["downvotes"]["max"])]
+        self.review_data = df
+
+    def as_dict(self) -> dict:
+        return {
+            "review_data": self.review_data.to_dict(),
+            "filter_ranges": self.filter_ranges,
+            "photo_url": self.photo_url,
+            "product_name": self.product_name,
+            "review_count": self.review_count,
+            "pros_count": self.pros_count,
+            "cons_count": self.cons_count,
+            "avg_rating": self.avg_rating
+        }
+
+
+def get_basic_info_for_product(product_id: int) -> tuple(int, str, str):
+    response = requests.get(f"https://www.ceneo.pl/{product_id}#tab=reviews")
 
     main_page = BeautifulSoup(response.text, features="html.parser")
     review_count = int(main_page.find(class_="product-review__link").find("span").string)
+    photo_url = main_page.find(class_="gallery-carousel__media")["src"]
+    product_name = main_page.find(class_="card-outer-title").find("strong").string
 
+    return review_count, photo_url, product_name
+
+
+def get_n_reviews_for_product(review_count: int, product_id: int) -> Reviews:
     review_soups: list[BeautifulSoup] = []
     for i in range(1, review_count // 10 + 2):
-        sleep(1)
+        sleep(current_app.config["REQUEST_COOLDOWN"])
         r_soup = bs4.BeautifulSoup(
-            requests.get(f"https://www.ceneo.pl/{id}/opinie-{i}").text,
+            requests.get(f"https://www.ceneo.pl/{product_id}/opinie-{i}", headers={"Cookie": "__utmf=24ae1c54a8f164745b922da4d63675a9_OvbWFZohA88uOLLhXYFzpA=="}).text,
             features="html.parser"
         )
         review_soups.append(r_soup)
@@ -93,37 +148,75 @@ def get_reviews_for_product(id: int) -> Reviews:
     return Reviews(list(itertools.chain.from_iterable(reviews_from_each_soup)))
 
 
-def extract_product_info(id: int) -> pd.DataFrame:
+def extract_product_info(product_id: int) -> Product:
 
-    reviews = get_reviews_for_product(id)
+    review_count, photo_url, product_name = get_basic_info_for_product(product_id)
+    reviews = get_n_reviews_for_product(review_count, product_id)
 
     review_id = [x["data-entry-id"] for x in reviews]
     username = reviews.query(class_="user-post__author-name").extract(lambda x: x.string)
     recommended = [bool(x) for x in reviews.query(class_="recommended")]
-    stars = reviews.query(class_="user-post__score-count").extract(lambda x: x.string)
+    stars = reviews.query(class_="user-post__score-count").extract(lambda x: float(x.string.split("/")[0].replace(",", ".")))
     trusted = [bool(x) for x in reviews.query(class_="review-pz")]
-    time_posted = reviews.query("time").extract(lambda x: x["datetime"])
-    time_bought = reviews.query("time").extract(lambda x: x.find_next_sibling()["datetime"] if x.find_next_sibling() else None)
-    votes_yes = reviews.query(class_="vote-yes").extract(lambda x: x["data-total-vote"])
-    votes_no = reviews.query(class_="vote-no").extract(lambda x: x["data-total-vote"])
+    time_posted = reviews.query("time").extract(lambda x: datetime.fromisoformat(x["datetime"]).isoformat())
+    time_bought = reviews.query("time").extract(lambda x: datetime.fromisoformat(x.find_next_sibling()["datetime"]).isoformat() if x.find_next_sibling() else None)
+    votes_yes = reviews.query(class_="vote-yes").extract(lambda x: int(x["data-total-vote"]))
+    votes_no = reviews.query(class_="vote-no").extract(lambda x: int(x["data-total-vote"]))
     content = reviews.query(class_="user-post__text").extract(lambda x: x.string)
     positives = reviews.query(class_="review-feature__title--positives").extract(lambda x: [x.string for x in x.find_next_siblings()])
     negatives = reviews.query(class_="review-feature__title--negatives").extract(lambda x: [x.string for x in x.find_next_siblings()])
 
     df = pd.DataFrame(
         {
-            "ID": review_id,
-            "Username": username,
-            "Recommended": recommended,
-            "Stars": stars,
-            "Trusted": trusted,
-            "Time Posted": time_posted,
-            "Time Bought": time_bought,
-            "Upvotes": votes_yes,
-            "Downvotes": votes_no,
-            "Content": content,
-            "Positives": positives,
-            "Negatives": negatives
+            "id": review_id,
+            "username": username,
+            "recommended": recommended,
+            "stars": stars,
+            "trusted": trusted,
+            "time_posted": time_posted,
+            "time_bought": time_bought,
+            "upvotes": votes_yes,
+            "downvotes": votes_no,
+            "content": content,
+            "positives": positives,
+            "negatives": negatives
         }
     )
-    return df
+
+    filter_ranges = {
+        "stars": {
+            "min": float(df["stars"].dropna().min()),
+            "max": float(df["stars"].dropna().max())
+        },
+        "time_posted": {
+            "min": df["time_posted"].dropna().min(),
+            "max": df["time_posted"].dropna().max()
+        },
+        "time_bought": {
+            "min": df["time_bought"].dropna().min(),
+            "max": df["time_bought"].dropna().max()
+        },
+        "upvotes": {
+            "min": int(df["upvotes"].dropna().min()),
+            "max": int(df["upvotes"].dropna().max())
+        },
+        "downvotes": {
+            "min": int(df["downvotes"].dropna().min()),
+            "max": int(df["downvotes"].dropna().max())
+        }
+    }
+
+    pros_count = df["upvotes"].explode().value_counts().size
+    cons_count = df["downvotes"].explode().value_counts().size
+    avg_rating = df["stars"].mean()
+
+    return Product(
+        review_data=df,
+        filter_ranges=filter_ranges,
+        photo_url=photo_url,
+        product_name=product_name,
+        review_count=review_count,
+        pros_count=pros_count,
+        cons_count=cons_count,
+        avg_rating=avg_rating
+    )
