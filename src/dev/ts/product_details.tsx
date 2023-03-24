@@ -19,16 +19,16 @@ interface DateMinMax {
 }
 
 interface FilterData {
-    "Stars": MinMax
-    "Time Posted": DateMinMax,
-    "Time Bought": DateMinMax,
-    "Upvotes": MinMax,
-    "Downvotes": MinMax
+    stars: MinMax
+    time_posted: DateMinMax,
+    time_bought: DateMinMax,
+    upvotes: MinMax,
+    downvotes: MinMax
 }
 
 export interface Filters extends FilterData {
-    "Recommended": TrueFalse,
-    "Trusted": TrueFalse,
+    recommended: TrueFalse,
+    trusted: TrueFalse,
 }
 
 export interface Data {

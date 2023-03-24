@@ -6,7 +6,7 @@ import "@wojtekmaj/react-daterange-picker/dist/DateRangePicker.css";
 import "react-calendar/dist/Calendar.css";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-import Stars from "./Stars";
+import Stars from "../common/Stars";
 import equal from "deep-equal";
 
 interface FilteringOptionsProps {
@@ -21,72 +21,72 @@ function FilteringOptions(props: FilteringOptionsProps) {
     };
 
     const time_posted = {
-        min: new Date(props.data.filter_data["Time Posted"].min),
-        max: new Date(props.data.filter_data["Time Posted"].max)
+        min: new Date(props.data.filter_data.time_posted.min),
+        max: new Date(props.data.filter_data.time_posted.max)
     };
 
     const time_bought = {
-        min: new Date(props.data.filter_data["Time Bought"].min),
-        max: new Date(props.data.filter_data["Time Bought"].max)
+        min: new Date(props.data.filter_data.time_bought.min),
+        max: new Date(props.data.filter_data.time_bought.max)
     };
 
     const urlparams = new URLSearchParams(location.search);
     
     const filter_bounds: Filters = {
-        "Recommended": {true: true, false: true},
-        "Trusted": {true: true, false: true},
-        "Stars": props.data.filter_data["Stars"],
-        "Time Posted": time_posted,
-        "Time Bought": time_bought,
-        "Upvotes": props.data.filter_data["Upvotes"],
-        "Downvotes": props.data.filter_data["Downvotes"]
+        recommended: {true: true, false: true},
+        trusted: {true: true, false: true},
+        stars: props.data.filter_data.stars,
+        time_posted: time_posted,
+        time_bought: time_bought,
+        upvotes: props.data.filter_data.upvotes,
+        downvotes: props.data.filter_data.downvotes
     };
 
     let filters: Filters;
     if (urlparams.has("filters")) {
         filters = JSON.parse(decodeURIComponent(atob(urlparams.get("filters")!)));
-        filters["Time Posted"] = {
-            min: new Date(filters["Time Posted"].min),
-            max: new Date(filters["Time Posted"].max)
+        filters.time_posted = {
+            min: new Date(filters.time_posted.min),
+            max: new Date(filters.time_posted.max)
         };
-        filters["Time Bought"] = {
-            min: new Date(filters["Time Bought"].min),
-            max: new Date(filters["Time Bought"].max)
+        filters.time_bought = {
+            min: new Date(filters.time_bought.min),
+            max: new Date(filters.time_bought.max)
         };
     } else {
         filters = filter_bounds;
     }
     
     
-    const [recommendedState, setRecommendedState] = useState(filters["Recommended"]);
-    const [trustedState, setTrustedState] = useState(filters["Trusted"]);
-    const [timePostedRange, setTimePostedRange] = useState<DateRangePickerProps["value"]>([filters["Time Posted"].min, filters["Time Posted"].max]);
-    const [timeBoughtRange, setTimeBoughtRange] = useState<DateRangePickerProps["value"]>([filters["Time Bought"].min, filters["Time Bought"].max]);
-    const [starsRange, setStarsRange] = useState([filters["Stars"].min, filters["Stars"].max]);
-    const [upvotesRange, setUpvotesRange] = useState([filters["Upvotes"].min, filters["Upvotes"].max]);
-    const [downvotesRange, setDownvotesRange] = useState([filters["Downvotes"].min, filters["Downvotes"].max]);
+    const [recommendedState, setRecommendedState] = useState(filters.recommended);
+    const [trustedState, setTrustedState] = useState(filters.trusted);
+    const [timePostedRange, setTimePostedRange] = useState<DateRangePickerProps["value"]>([filters.time_posted.min, filters.time_posted.max]);
+    const [timeBoughtRange, setTimeBoughtRange] = useState<DateRangePickerProps["value"]>([filters.time_bought.min, filters.time_bought.max]);
+    const [starsRange, setStarsRange] = useState([filters.stars.min, filters.stars.max]);
+    const [upvotesRange, setupvotesRange] = useState([filters.upvotes.min, filters.upvotes.max]);
+    const [downvotesRange, setDownvotesRange] = useState([filters.downvotes.min, filters.downvotes.max]);
 
     const apply_filters = () => {
         const filters: Filters = {
-            "Recommended": recommendedState,
-            "Trusted": trustedState,
-            "Stars": {
+            recommended: recommendedState,
+            trusted: trustedState,
+            stars: {
                 min: starsRange[0],
                 max: starsRange[1]
             },
-            "Time Posted": {
+            time_posted: {
                 min: (timePostedRange as Date[])[0],
                 max: (timePostedRange as Date[])[1]
             },
-            "Time Bought": {
+            time_bought: {
                 min: (timeBoughtRange as Date[])[0],
                 max: (timeBoughtRange as Date[])[1]
             },
-            "Upvotes": {
+            upvotes: {
                 min: upvotesRange[0],
                 max: upvotesRange[1]
             },
-            "Downvotes": {
+            downvotes: {
                 min: downvotesRange[0],
                 max: downvotesRange[1]
             }
@@ -136,8 +136,8 @@ function FilteringOptions(props: FilteringOptionsProps) {
                         range
                         value={starsRange}
                         onChange={value => setStarsRange(value as number[])}
-                        min={filter_bounds["Stars"].min}
-                        max={filter_bounds["Stars"].max}
+                        min={filter_bounds.stars.min}
+                        max={filter_bounds.stars.max}
                         step={0.5}
                     />
                 </div>
@@ -150,16 +150,16 @@ function FilteringOptions(props: FilteringOptionsProps) {
                 <DateRangePicker
                     onChange={setTimePostedRange}
                     value={timePostedRange}
-                    minDate={filter_bounds["Time Posted"].min}
-                    maxDate={filter_bounds["Time Posted"].max}
+                    minDate={filter_bounds.time_posted.min}
+                    maxDate={filter_bounds.time_posted.max}
                     closeCalendar={false}
                 />
                 <div className="filter-label">Czas kupna:</div>
                 <DateRangePicker
                     onChange={setTimeBoughtRange}
                     value={timeBoughtRange}
-                    minDate={filter_bounds["Time Bought"].min}
-                    maxDate={filter_bounds["Time Bought"].max}
+                    minDate={filter_bounds.time_bought.min}
+                    maxDate={filter_bounds.time_bought.max}
                     closeCalendar={false}
                 />
                 <div className="filter-label">Głosy <FaPlusCircle color="#27ae60" />:</div>
@@ -167,9 +167,9 @@ function FilteringOptions(props: FilteringOptionsProps) {
                     <Slider
                         range
                         value={upvotesRange}
-                        onChange={value => setUpvotesRange(value as number[])}
-                        min={filter_bounds["Upvotes"].min}
-                        max={filter_bounds["Upvotes"].max}
+                        onChange={value => setupvotesRange(value as number[])}
+                        min={filter_bounds.upvotes.min}
+                        max={filter_bounds.upvotes.max}
                         step={1}
                     />
                 </div>
@@ -184,18 +184,18 @@ function FilteringOptions(props: FilteringOptionsProps) {
                         range
                         value={downvotesRange}
                         onChange={value => setDownvotesRange(value as number[])}
-                        min={filter_bounds["Downvotes"].min}
-                        max={filter_bounds["Downvotes"].max}
+                        min={filter_bounds.downvotes.min}
+                        max={filter_bounds.downvotes.max}
                         step={1}
                     />
                 </div>
-                <div className="flex gap-2 justify-center items-center">
+                <div className="flex gap-2 justify-center items-center mb-10">
                     <span>{downvotesRange[0]}</span>
                     <span>-</span>
                     <span>{downvotesRange[1]}</span>
                 </div>
                 <div
-                    className="bg-ceneo w-3/5 h-10 rounded mt-10 grid place-content-center text-white text-xl cursor-pointer hover:bg-orange-500 select-none transition"
+                    className="button"
                     onClick={apply_filters}
                 >
                     Aplikuj filtry

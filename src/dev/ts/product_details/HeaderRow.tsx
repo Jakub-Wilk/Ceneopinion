@@ -12,18 +12,18 @@ interface HeaderRowProps {
 function HeaderRow(props: HeaderRowProps) {
 
     const header_translations = {
-        "ID": "ID",
-        "Username": "Użytkownik",
-        "Recommended": "Poleca",
+        "id": "id",
+        "username": "Użytkownik",
+        "recommended": "Poleca",
         "Stars": "Gwiazdki",
-        "Trusted": "Zaufana",
-        "Time Posted": "Czas recenzji",
-        "Time Bought": "Czas kupna",
-        "Upvotes": <>{"Głosy "}<FaPlusCircle className="translate-y-0.5" color="#27ae60" /></>,
-        "Downvotes": <>{"Głosy "}<FaMinusCircle className="translate-y-0.5" color="#c0392b" /></>,
-        "Content": "Treść",
-        "Positives": "Zalety",
-        "Negatives": "Wady"
+        "trusted": "Zaufana",
+        "time_posted": "Czas recenzji",
+        "time_bought": "Czas kupna",
+        "upvotes": <>{"Głosy "}<FaPlusCircle className="translate-y-0.5" color="#27ae60" /></>,
+        "downvotes": <>{"Głosy "}<FaMinusCircle className="translate-y-0.5" color="#c0392b" /></>,
+        "content": "Treść",
+        "positives": "Zalety",
+        "negatives": "Wady"
     };
 
     const get_href = (header: string, alt_direction: string) => {

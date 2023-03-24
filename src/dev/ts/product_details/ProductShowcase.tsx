@@ -1,5 +1,6 @@
 import { Data } from "../product_details";
 import FilteringOptions from "./FilteringOptions";
+import ProductGallery from "./ProductGallery";
 import ReviewsTable from "./ReviewsTable";
 
 interface ProductShowcaseProps {
@@ -7,7 +8,8 @@ interface ProductShowcaseProps {
 }
 
 function ProductShowcase(props: ProductShowcaseProps) {
-    return <div>
+    return <div className="flex flex-col items-center">
+        <ProductGallery data={props.data} />
         <FilteringOptions data={props.data}/>
         <div>
             <ReviewsTable data={props.data} />

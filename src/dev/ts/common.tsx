@@ -4,27 +4,27 @@ import ReactDOM from "react-dom/client";
 type App = (props?: any) => JSX.Element;
 
 export interface ProductOverview {
-    "photo_url": string,
-    "product_name": string,
-    "review_count": number,
-    "pros_count": number,
-    "cons_count": number,
-    "avg_rating": number
+    photo_url: string,
+    product_name: string,
+    review_count: number,
+    pros_count: number,
+    cons_count: number,
+    avg_rating: number
 }
 
 export interface ReviewData {
-    "ID": Record<string, string | null>,
-    "Username": Record<string, string | null>,
-    "Recommended": Record<string, boolean | null>,
-    "Stars": Record<string, number | null>,
-    "Trusted": Record<string, boolean | null>,
-    "Time Posted": Record<string, string | null>,
-    "Time Bought": Record<string, string | null>,
-    "Upvotes": Record<string, number | null>,
-    "Downvotes": Record<string, number | null>,
-    "Content": Record<string, string | null>,
-    "Positives": Record<string, Array<string> | null>,
-    "Negatives": Record<string, Array<string> | null>
+    id: Record<string, string | null>,
+    username: Record<string, string | null>,
+    recommended: Record<string, boolean | null>,
+    stars: Record<string, number | null>,
+    trusted: Record<string, boolean | null>,
+    time_posted: Record<string, string | null>,
+    time_bought: Record<string, string | null>,
+    upvotes: Record<string, number | null>,
+    downvotes: Record<string, number | null>,
+    content: Record<string, string | null>,
+    positives: Record<string, Array<string> | null>,
+    negatives: Record<string, Array<string> | null>
 }
 
 function setup_react(app: App) {

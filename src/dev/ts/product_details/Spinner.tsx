@@ -9,15 +9,15 @@ interface SpinnerProps {
 }
 
 function Spinner(props: SpinnerProps) {
-    const [percentage, setPercentage] = useState(props.elapsed / props.seconds * 100);
+    const [percentage, setPercentage] = useState(Math.min(props.elapsed / props.seconds * 100, 100));
 
-    useEffect(() => {
-        if (percentage < 100) {
-            setTimeout(() => {
-                setPercentage(Math.max(percentage + 1, 100));
-            }, (props.seconds / 100) * 1000);
-        }
-    });
+    console.log(percentage, props.elapsed, props.seconds);
+
+    if (percentage < 100) {
+        setTimeout(() => {
+            setPercentage(Math.min(percentage + 1, 100));
+        }, (props.seconds / 100) * 1000);
+    }
     
     return (
         <div className="flex flex-col items-center select-none">

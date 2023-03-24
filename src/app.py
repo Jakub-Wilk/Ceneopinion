@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, send_file
 from helpers import load_config, get_db, get_basic_info_for_product, extract_product_info, Product
 import json
 from datetime import datetime
@@ -6,6 +6,7 @@ import math
 import pandas as pd
 import base64
 import urllib
+import io
 
 
 app = Flask(__name__, template_folder="./static/templates")
@@ -37,7 +38,7 @@ def extract():
 
 @app.get("/product/<int:product_id>")
 def details_get(product_id: int):
-    product_data = db.products.find_one({"product_id": product_id})["review_data"]
+    product_data = db.products.find_one({"product_id": product_id})
     if not product_data:
         queue_data = db.queue.find_one({"product_id": product_id})
         review_data = {}
@@ -51,6 +52,7 @@ def details_get(product_id: int):
         filter_ranges = None
         product_overview = None
     else:
+        product_data = product_data["review_data"]
         product_data["review_data"] = pd.DataFrame(product_data["review_data"])
         product = Product(**product_data)
         filters = request.args.get("filters", None)
@@ -95,6 +97,24 @@ def details_post(product_id: int):
         db.queue.delete_one({"product_id": product_id})
         db.products.insert_one({"product_id": product_id, "review_data": product_info.as_dict()})
         return json.dumps({"state": "completed"})
+
+
+@app.get("/product/<int:product_id>.<ext>")
+def download(product_id: int, ext: str):
+    product_data = db.products.find_one({"product_id": product_id})
+    if not product_data or ext not in ("csv", "xml", "json"):
+        return redirect(url_for("details_get", product_id=product_id))
+    else:
+        df = pd.DataFrame(product_data["review_data"]["review_data"])
+        match ext:
+            case "csv":
+                return send_file(io.BytesIO(str.encode(df.to_csv())), mimetype="text/csv")
+            case "xml":
+                df["positives"] = df["positives"].map(lambda x: {c: v for c, v in enumerate(x)} if x else None)
+                df["negatives"] = df["negatives"].map(lambda x: {c: v for c, v in enumerate(x)} if x else None)
+                return send_file(io.BytesIO(str.encode(df.to_xml())), mimetype="application/xml")
+            case "json":
+                return send_file(io.BytesIO(str.encode(df.to_json())), mimetype="application/json")
 
 
 @app.get("/about")

@@ -14,7 +14,7 @@ interface ReviewsTableProps {
 
 function ReviewsTable(props: ReviewsTableProps) {
 
-    const headers = ["ID", "Username", "Recommended", "Stars", "Trusted", "Time Posted", "Time Bought", "Upvotes", "Downvotes", "Content", "Positives", "Negatives"];
+    const headers = ["id", "username", "recommended", "stars", "trusted", "time_posted", "time_bought", "upvotes", "downvotes", "content", "positives", "negatives"];
 
     const dataRows = [];
 
@@ -48,12 +48,12 @@ function ReviewsTable(props: ReviewsTableProps) {
         direction: direction
     };
 
-    for (const id of Object.keys(props.data.review_data["ID"])) {
+    for (const id of Object.keys(props.data.review_data["id"])) {
         dataRows.push(<DataRow row_number={+id} key={+id} data={props.data} headers={headers}/>);
     }
 
     return (
-        <div className="flex flex-col h-auto w-full items-center my-16">
+        <div className="flex flex-col h-auto w-full items-center my-16 p-4 border border-gray-300 rounded-2xl shadow-2xl">
             <HeaderRow headers={headers} sort={sort}/>
             {dataRows}
         </div>

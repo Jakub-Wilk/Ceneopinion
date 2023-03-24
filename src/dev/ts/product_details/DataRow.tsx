@@ -1,7 +1,7 @@
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { ReviewData } from "../common";
 import { Data } from "../product_details";
-import Stars from "./Stars";
+import Stars from "../common/Stars";
 
 interface DataRowProps {
     row_number: number,
@@ -24,11 +24,11 @@ function DataRow(props: DataRowProps) {
             content.push(data_extracted ? <FaCheckCircle key={`${props.row_number}_`} color="#2ecc71" /> : <FaTimesCircle key={`${props.row_number}${header}_`} color="#e74c3c" />);
         } else if (header == "Stars" && typeof data_extracted === "number") {
             content.push(<Stars key={`${props.row_number}${header}_`} count={data_extracted}/>);
-        } else if (header == "Upvotes" && typeof data_extracted === "number") {
+        } else if (header == "upvotes" && typeof data_extracted === "number") {
             content.push(<span key={`${props.row_number}${header}_`} className="text-[#27ae60] font-semibold">{data_extracted.toString()}</span>);
-        } else if (header == "Downvotes" && typeof data_extracted === "number") {
+        } else if (header == "downvotes" && typeof data_extracted === "number") {
             content.push(<span key={`${props.row_number}${header}_`} className="text-[#c0392b] font-semibold">{data_extracted.toString()}</span>);
-        } else if (["Time Posted", "Time Bought"].includes(header) && typeof data_extracted === "string") {
+        } else if (["time_posted", "time_bought"].includes(header) && typeof data_extracted === "string") {
             content.push(<span key={`${props.row_number}${header}_`}>{new Date(data_extracted).toLocaleString()}</span>);
         } else {
             content.push(<span key={`${props.row_number}${header}_`}>{data_extracted?.toString()}</span>);

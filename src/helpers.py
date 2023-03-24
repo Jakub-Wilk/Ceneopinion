@@ -100,13 +100,13 @@ class Product:
 
     def filter(self, filters: dict[str, dict[str, float | str | int]]):
         df = self.review_data
-        df = df[df["Recommended"].isin([k == "true" for k, v in filters["Recommended"].items() if v])]
-        df = df[df["Trusted"].isin([k == "true" for k, v in filters["Trusted"].items() if v])]
-        df = df[df["Stars"].between(filters["Stars"]["min"], filters["Stars"]["max"])]
-        df = df[df["Time Posted"].between(filters["Time Posted"]["min"], filters["Time Posted"]["max"])]
-        df = df[df["Time Bought"].between(filters["Time Bought"]["min"], filters["Time Bought"]["max"]) | df["Time Bought"].isna()]
-        df = df[df["Upvotes"].between(filters["Upvotes"]["min"], filters["Upvotes"]["max"])]
-        df = df[df["Downvotes"].between(filters["Downvotes"]["min"], filters["Downvotes"]["max"])]
+        df = df[df["recommended"].isin([k == "true" for k, v in filters["recommended"].items() if v])]
+        df = df[df["trusted"].isin([k == "true" for k, v in filters["trusted"].items() if v])]
+        df = df[df["stars"].between(filters["stars"]["min"], filters["stars"]["max"])]
+        df = df[df["time_posted"].between(filters["time_posted"]["min"], filters["time_posted"]["max"])]
+        df = df[df["time_bought"].between(filters["time_bought"]["min"], filters["time_bought"]["max"]) | df["time_bought"].isna()]
+        df = df[df["upvotes"].between(filters["upvotes"]["min"], filters["upvotes"]["max"])]
+        df = df[df["downvotes"].between(filters["downvotes"]["min"], filters["downvotes"]["max"])]
         self.review_data = df
 
     def as_dict(self) -> dict:
@@ -123,12 +123,12 @@ class Product:
 
 
 def get_basic_info_for_product(product_id: int) -> tuple(int, str, str):
-    response = requests.get(f"https://www.ceneo.pl/{product_id}")
+    response = requests.get(f"https://www.ceneo.pl/{product_id}#tab=reviews")
 
     main_page = BeautifulSoup(response.text, features="html.parser")
     review_count = int(main_page.find(class_="product-review__link").find("span").string)
     photo_url = main_page.find(class_="gallery-carousel__media")["src"]
-    product_name = main_page.find(class_="product-top__product-info__name").string
+    product_name = main_page.find(class_="card-outer-title").find("strong").string
 
     return review_count, photo_url, product_name
 
@@ -168,47 +168,47 @@ def extract_product_info(product_id: int) -> Product:
 
     df = pd.DataFrame(
         {
-            "ID": review_id,
-            "Username": username,
-            "Recommended": recommended,
-            "Stars": stars,
-            "Trusted": trusted,
-            "Time Posted": time_posted,
-            "Time Bought": time_bought,
-            "Upvotes": votes_yes,
-            "Downvotes": votes_no,
-            "Content": content,
-            "Positives": positives,
-            "Negatives": negatives
+            "id": review_id,
+            "username": username,
+            "recommended": recommended,
+            "stars": stars,
+            "trusted": trusted,
+            "time_posted": time_posted,
+            "time_bought": time_bought,
+            "upvotes": votes_yes,
+            "downvotes": votes_no,
+            "content": content,
+            "positives": positives,
+            "negatives": negatives
         }
     )
 
     filter_ranges = {
-        "Stars": {
-            "min": float(df["Stars"].dropna().min()),
-            "max": float(df["Stars"].dropna().max())
+        "stars": {
+            "min": float(df["stars"].dropna().min()),
+            "max": float(df["stars"].dropna().max())
         },
-        "Time Posted": {
-            "min": df["Time Posted"].dropna().min(),
-            "max": df["Time Posted"].dropna().max()
+        "time_posted": {
+            "min": df["time_posted"].dropna().min(),
+            "max": df["time_posted"].dropna().max()
         },
-        "Time Bought": {
-            "min": df["Time Bought"].dropna().min(),
-            "max": df["Time Bought"].dropna().max()
+        "time_bought": {
+            "min": df["time_bought"].dropna().min(),
+            "max": df["time_bought"].dropna().max()
         },
-        "Upvotes": {
-            "min": int(df["Upvotes"].dropna().min()),
-            "max": int(df["Upvotes"].dropna().max())
+        "upvotes": {
+            "min": int(df["upvotes"].dropna().min()),
+            "max": int(df["upvotes"].dropna().max())
         },
-        "Downvotes": {
-            "min": int(df["Downvotes"].dropna().min()),
-            "max": int(df["Downvotes"].dropna().max())
+        "downvotes": {
+            "min": int(df["downvotes"].dropna().min()),
+            "max": int(df["downvotes"].dropna().max())
         }
     }
 
-    pros_count = df["Upvotes"].explode().value_counts().size
-    cons_count = df["Downvotes"].explode().value_counts().size
-    avg_rating = df["Stars"].mean()
+    pros_count = df["upvotes"].explode().value_counts().size
+    cons_count = df["downvotes"].explode().value_counts().size
+    avg_rating = df["stars"].mean()
 
     return Product(
         review_data=df,
