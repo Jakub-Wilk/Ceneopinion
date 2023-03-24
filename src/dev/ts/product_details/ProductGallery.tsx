@@ -14,6 +14,7 @@ function ProductGallery(props: ProductGalleryProps) {
             type={CardType.Showcase}
             name={product_overview.product_name}
             photo_url={product_overview.photo_url}
+            count={product_overview.review_count}
             pros={product_overview.pros_count}
             cons={product_overview.cons_count}
             average={product_overview.avg_rating}

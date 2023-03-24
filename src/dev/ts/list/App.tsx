@@ -15,6 +15,7 @@ function App() {
             type={CardType.List}
             name={overview.product_name}
             photo_url={overview.photo_url}
+            count={overview.review_count}
             pros={overview.pros_count}
             cons={overview.cons_count}
             average={overview.avg_rating}

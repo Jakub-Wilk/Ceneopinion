@@ -20,6 +20,7 @@ function App() {
                 type={CardType.Chart}
                 name={data.product_overview.product_name}
                 photo_url={data.product_overview.photo_url}
+                count={data.product_overview.review_count}
                 pros={data.product_overview.pros_count}
                 cons={data.product_overview.cons_count}
                 average={data.product_overview.avg_rating}

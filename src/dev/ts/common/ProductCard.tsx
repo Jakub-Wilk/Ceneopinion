@@ -11,6 +11,7 @@ interface ProductCardProps {
     type: CardType
     name: string,
     photo_url: string,
+    count: number,
     pros: number,
     cons: number,
     average: number,
@@ -30,12 +31,14 @@ function ProductCard(props: ProductCardProps) {
 
     const chart_previous = location.pathname.substring(0, location.pathname.lastIndexOf("/"));
 
-    return <div className="mt-8 flex rounded-2xl shadow-2xl border border-gray-300 p-4">
+    return <div className="mt-8 flex justify-end rounded-2xl shadow-2xl border border-gray-300 p-4 w-[50rem]">
         <img src={props.photo_url}/>
-        <div className="ml-8 flex flex-col justify-center">
-            <div className="text-2xl mb-4">{props.name}</div>
+        <div className="ml-8 flex flex-col justify-center w-[35rem]">
+            <div className="text-2xl mb-4" title={props.name}>{props.name.length <= 40 ? props.name : props.name.slice(0, 37) + "..."}</div>
             <div className="flex">
                 <div className={`flex justify-center ${[CardType.Showcase, CardType.List].includes(props.type) ? "flex-col items-start gap-1" : "items-center gap-3"}`}>
+                    <div className="flex h-full">Liczba opinii: {props.count}</div>
+                    {[CardType.Showcase, CardType.List].includes(props.type) ? null : <div>|</div>}
                     <div className="flex h-full"><FaThumbsUp className="translate-y-1 mr-2" color="#27ae60"/>Zalety: {props.pros}</div>
                     {[CardType.Showcase, CardType.List].includes(props.type) ? null : <div>|</div>}
                     <div className="flex h-full"><FaThumbsDown className="translate-y-2 mr-2" color="#c0392b" />Wady: {props.cons}</div>
