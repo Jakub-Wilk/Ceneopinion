@@ -44,10 +44,6 @@ $ceneo-light: #F97316;
     @apply -right-20 hover:-right-[5.5rem];
 }
 
-.button {
-   @apply bg-ceneo w-48 h-10 rounded grid place-content-center text-white text-xl cursor-pointer hover:bg-orange-500 select-none transition;
-}
-
 .check-list {
     @apply w-4/5 flex flex-col items-start;
 

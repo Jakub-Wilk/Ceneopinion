@@ -27,8 +27,11 @@ def product():
 
 
 @app.get("/product/list")
-def list():
-    return render_template("index.html", endpoint="list", data={})
+def list_products():
+    products = db.products.find({}, {"product_id": 1, "review_data.photo_url": 1, "review_data.product_name": 1, "review_data.review_count": 1, "review_data.pros_count": 1, "review_data.cons_count": 1, "review_data.avg_rating": 1, "_id": 0})
+    return render_template("index.html", endpoint="list", data={
+        "products": list(products)
+    })
 
 
 @app.get("/product/extract")
