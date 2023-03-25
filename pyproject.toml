@@ -11,11 +11,10 @@ flask = "^2.2.3"
 montydb = "^2.5.0"
 python-dotenv = "^1.0.0"
 pandas = "^1.5.3"
-plotly = "^5.13.1"
 beautifulsoup4 = "^4.11.2"
 pymongo = "^4.3.3"
 requests = "^2.28.2"
-lxml = "^4.9.2"
+xlsxwriter = "^3.0.9"
 
 
 [tool.poetry.group.dev.dependencies]

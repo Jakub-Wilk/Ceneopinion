@@ -117,17 +117,20 @@ def details_post(product_id: int):
 @app.get("/product/<int:product_id>.<ext>")
 def download(product_id: int, ext: str):
     product_data = db.products.find_one({"product_id": product_id})
-    if not product_data or ext not in ("csv", "xml", "json"):
+    if not product_data or ext not in ("csv", "xlsx", "json"):
         return redirect(url_for("details_get", product_id=product_id))
     else:
         df = pd.DataFrame(product_data["review_data"]["review_data"])
         match ext:
             case "csv":
                 return send_file(io.BytesIO(str.encode(df.to_csv())), mimetype="text/csv")
-            case "xml":
-                df["positives"] = df["positives"].map(lambda x: {c: v for c, v in enumerate(x)} if x else None)
-                df["negatives"] = df["negatives"].map(lambda x: {c: v for c, v in enumerate(x)} if x else None)
-                return send_file(io.BytesIO(str.encode(df.to_xml())), mimetype="application/xml")
+            case "xlsx":
+                output = io.BytesIO()
+                writer = pd.ExcelWriter(output, engine="xlsxwriter")
+                df.to_excel(writer)
+                writer.save()
+                output.seek(0)
+                return send_file(output, mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
             case "json":
                 return send_file(io.BytesIO(str.encode(df.to_json())), mimetype="application/json")
 
