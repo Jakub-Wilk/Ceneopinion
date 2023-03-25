@@ -31,10 +31,14 @@ function ProductCard(props: ProductCardProps) {
 
     const chart_previous = location.pathname.substring(0, location.pathname.lastIndexOf("/"));
 
-    return <div className="mt-8 flex justify-end rounded-2xl shadow-2xl border border-gray-300 p-4 w-[50rem]">
+    return <div className="mt-8 flex justify-end card w-[50rem]">
         <img src={props.photo_url}/>
         <div className="ml-8 flex flex-col justify-center w-[35rem]">
-            <div className="text-2xl mb-4" title={props.name}>{props.name.length <= 40 ? props.name : props.name.slice(0, 37) + "..."}</div>
+            <a
+                className={`text-2xl mb-4 ${props.type == CardType.List ? "" : "pointer-events-none"}`}
+                title={props.name}
+                href={props.type == CardType.List ? `/product/${props.product_id!}` : ""}
+            >{props.name.length <= 40 ? props.name : props.name.slice(0, 37) + "..."}</a>
             <div className="flex">
                 <div className={`flex justify-center ${[CardType.Showcase, CardType.List].includes(props.type) ? "flex-col items-start gap-1" : "items-center gap-3"}`}>
                     <div className="flex h-full">Liczba opinii: {props.count}</div>
