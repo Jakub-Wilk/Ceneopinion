@@ -22,11 +22,11 @@ function NavbarButton(props: NavbarButtonProps) {
             break;
         case NavbarOptions.List:
             url = "/product/list";
-            text = "Lista produktów";
+            text = "Lista Produktów";
             break;
         case NavbarOptions.About:
             url = "/about";
-            text = "O autorze";
+            text = "O Autorze";
             break;
     }
 

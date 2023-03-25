@@ -27,7 +27,7 @@ function App() {
     return (
         <>
             <Navbar selected={NavbarOptions.List}/>
-            <div className="flex flex-col justify-start items-center gap-8">
+            <div className="flex flex-col justify-start items-center">
                 {cards}
             </div>
         </>

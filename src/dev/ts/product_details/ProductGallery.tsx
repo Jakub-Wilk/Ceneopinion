@@ -19,7 +19,7 @@ function ProductGallery(props: ProductGalleryProps) {
             cons={product_overview.cons_count}
             average={product_overview.avg_rating}
         />
-        <div className="mt-8 flex flex-col justify-evenly rounded-2xl shadow-2xl border border-gray-300 p-4">
+        <div className="mt-8 flex flex-col justify-evenly card">
             <div className="grid place-content-center text-xl">Eksport danych:</div>
             <a className="button" href={`${location.pathname}.csv`} download>Pobierz CSV</a>
             <a className="button" href={`${location.pathname}.xlsx`} download>Pobierz XLSX</a>

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 %navbar-button {
-    @apply w-64 h-full font-sans text-2xl whitespace-nowrap grid place-content-center border-l-2 border-ceneo;
+    @apply w-52 h-full font-sans text-xl whitespace-nowrap grid place-content-center;
 }
 
 .navbar-button-selected {
@@ -16,6 +16,14 @@
     @apply text-ceneo hover:bg-ceneo hover:text-white transition;
 }
 
+.navbar-button-divider {
+    @apply w-[1px] h-3/5 bg-ceneo;
+}
+
 .button {
     @apply bg-ceneo w-48 h-10 rounded grid place-content-center text-white text-xl cursor-pointer hover:bg-orange-500 select-none transition;
- }
+}
+
+.card {
+    @apply rounded-2xl shadow-2xl border border-gray-300 p-4;
+}

@@ -13,7 +13,7 @@ interface NavbarProps {
 
 function Navbar(props: NavbarProps) {
     return (
-        <div className="h-20 w-full flex border-b-ceneo border-b-2 select-none">
+        <div className="h-16 w-full flex border-b-gray-300 shadow-xl select-none">
             <img src="/static/assets/Logo.png" className="h-full ml-4"></img>
             <div className="w-full flex justify-end items-center">
                 <NavbarButton destination={NavbarOptions.Main} current={props.selected}/>

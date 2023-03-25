@@ -27,7 +27,7 @@ function App() {
             />
         </div>
         <div className="flex justify-center my-16">
-            <div className="w-4/5 flex justify-evenly rounded-2xl shadow-2xl border border-gray-300 p-4">
+            <div className="w-4/5 flex justify-evenly card">
                 <div className="chart"><Pie data={data.pie} plugins={[]} options={options}/></div>
                 <div className="chart"><Bar data={data.bar} plugins={[]} options={options}/></div>
             </div>

@@ -18,7 +18,7 @@ function Form() {
         }
     };
 
-    return <div className="rounded-2xl shadow-2xl border border-gray-300 p-4 w-2/5 h-1/3">
+    return <div className="card w-2/5 h-1/3">
         <form className="flex flex-col justify-evenly items-center h-full w-full" method="GET" onSubmit={submit_handler}>
             <input type="number" name="pid" placeholder="Wpisz id produktu..." />
             <button type="submit" className="button">Ekstraktuj</button>

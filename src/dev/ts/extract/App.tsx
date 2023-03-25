@@ -3,8 +3,6 @@ import { NavbarOptions } from "../common/Navbar";
 import Form from "./Component";
 
 function App() {
-    
-
     return (
         <div className="flex h-full flex-col">
             <Navbar selected={NavbarOptions.Extract}/>

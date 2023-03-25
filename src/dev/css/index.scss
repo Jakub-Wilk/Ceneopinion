@@ -1,1 +1,19 @@
 @use 'common';
+
+.content {
+    a {
+        @apply text-ceneo cursor-pointer underline;
+    }
+}
+
+ul {
+    @apply ml-6;
+
+    li::before {
+        content: "– "
+    }
+}
+
+.mono {
+    @apply font-mono bg-gray-300 px-2 rounded-full;
+}
